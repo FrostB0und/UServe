@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Hub - Find and Book Trusted Local Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --accent: #0ea5e9;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --text-dark: #0f172a;
+            --text-gray: #475569;
+            --border-light: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* NAVBAR */
+        nav {
+            background-color: var(--bg-white);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.625rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-light);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-gray);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            display: flex;
+            gap: 1rem;
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            background-color: var(--bg-white);
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-container button {
+            padding: 1rem 2rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .search-container button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* SERVICE CATEGORIES SECTION */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-card {
+            background-color: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-card p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        /* PROVIDERS SECTION */
+        .providers-section {
+            background-color: var(--bg-light);
+        }
+
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .provider-card {
+            background-color: var(--bg-white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .provider-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .provider-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .provider-info {
+            padding: 1.5rem;
+        }
+
+        .provider-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .provider-type {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .provider-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .stars {
+            color: #f59e0b;
+        }
+
+        .provider-description {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .provider-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .provider-actions button {
+            flex: 1;
+            padding: 0.625rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-view {
+            background-color: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .btn-view:hover {
+            background-color: var(--border-light);
+        }
+
+        .btn-book {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-book:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* CTA SECTION */
+        .cta-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            background-color: var(--bg-light);
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .cta-section p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* HOW IT WORKS SECTION */
+        .how-it-works {
+            background-color: var(--bg-light);
+            padding: 4rem 2rem;
+        }
+
+        .steps-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .step-card {
+            background-color: var(--bg-white);
+            padding: 2rem;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+
+        .step-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .step-card p {
+            color: var(--text-gray);
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: var(--text-dark);
+            color: white;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #334155;
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .social-icons a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 1.25rem;
+            transition: color 0.2s;
+        }
+
+        .social-icons a:hover {
+            color: var(--accent);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .hero-content p {
+                font-size: 1rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-container button {
+                width: 100%;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+            }
+
+            .navbar-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 2rem 1rem;
+            }
+
+            .hero-content h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 2rem 1rem;
+            }
+
+            .categories-grid,
+            .providers-grid,
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav>
+        <div class="navbar-container">
+            <a href="#" class="logo">
+                <span>🔧</span> Service Hub
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#providers">Providers</a></li>
+                <li><a href="#bookings">Bookings</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="login.html" class="btn btn-outline">Login</a>
+                <a href="login.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Find and Book Trusted Local Services Instantly</h1>
+            <p>Connect with verified service professionals in your area. Easy booking, reliable service, and 5-star quality guaranteed.</p>
+            
+            <div class="search-container">
+                <input type="text" placeholder="Search services (electrician, plumber, tutor...)" />
+                <button>Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICE CATEGORIES -->
+    <section class="section" id="services">
+        <h2 class="section-title">Popular Services</h2>
+        <p class="section-subtitle">Explore our wide range of professional services</p>
+        
+        <div class="categories-grid">
+            <div class="category-card">
+                <div class="category-icon">⚡</div>
+                <h3>Electricians</h3>
+                <p>Professional electrical repairs and installations</p>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">🔧</div>
+                <h3>Plumbers</h3>
+                <p>Expert plumbing solutions for any issue</p>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">📚</div>
+                <h3>Tutors</h3>
+                <p>Qualified tutors for all subjects and levels</p>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">🧹</div>
+                <h3>Cleaning</h3>
+                <p>Professional cleaning services for homes</p>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">🏠</div>
+                <h3>Repairs</h3>
+                <p>General home repair and maintenance</p>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">💄</div>
+                <h3>Beauty Services</h3>
+                <p>Hair, nails, and beauty treatments</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED PROVIDERS -->
+    <section class="providers-section" id="providers">
+        <div class="section">
+            <h2 class="section-title">Featured Service Providers</h2>
+            <p class="section-subtitle">Meet our top-rated professionals</p>
+            
+            <div class="providers-grid">
+                <div class="provider-card">
+                    <div class="provider-image">🔧</div>
+                    <div class="provider-info">
+                        <div class="provider-name">John Smith</div>
+                        <div class="provider-type">Plumbing Specialist</div>
+                        <div class="provider-rating">
+                            <span class="stars">★★★★★</span>
+                            <span>(248)</span>
+                        </div>
+                        <p class="provider-description">Professional plumbing services with 15 years of experience.</p>
+                        <div class="provider-actions">
+                            <button class="btn-view">View Profile</button>
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-card">
+                    <div class="provider-image">⚡</div>
+                    <div class="provider-info">
+                        <div class="provider-name">Sarah Johnson</div>
+                        <div class="provider-type">Electrical Expert</div>
+                        <div class="provider-rating">
+                            <span class="stars">★★★★★</span>
+                            <span>(312)</span>
+                        </div>
+                        <p class="provider-description">Licensed electrician offering reliable electrical solutions.</p>
+                        <div class="provider-actions">
+                            <button class="btn-view">View Profile</button>
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-card">
+                    <div class="provider-image">📚</div>
+                    <div class="provider-info">
+                        <div class="provider-name">Michael Chen</div>
+                        <div class="provider-type">Math Tutor</div>
+                        <div class="provider-rating">
+                            <span class="stars">★★★★★</span>
+                            <span>(156)</span>
+                        </div>
+                        <p class="provider-description">Experienced tutor specializing in mathematics education.</p>
+                        <div class="provider-actions">
+                            <button class="btn-view">View Profile</button>
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-card">
+                    <div class="provider-image">🧹</div>
+                    <div class="provider-info">
+                        <div class="provider-name">Emma Wilson</div>
+                        <div class="provider-type">Cleaning Specialist</div>
+                        <div class="provider-rating">
+                            <span class="stars">★★★★★</span>
+                            <span>(189)</span>
+                        </div>
+                        <p class="provider-description">Professional house cleaning with eco-friendly products.</p>
+                        <div class="provider-actions">
+                            <button class="btn-view">View Profile</button>
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="section">
+        <div class="cta-section">
+            <h2>Ready to Book a Service?</h2>
+            <p>Join thousands of satisfied customers who trust Service Hub for their professional service needs.</p>
+            <button class="btn btn-primary">Book a Service Now</button>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works">
+        <div class="steps-container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Three simple steps to get your service done</p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Search Services</h3>
+                    <p>Browse our extensive catalog of trusted professionals in your area.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Choose Provider</h3>
+                    <p>Review profiles, ratings, and book with the provider you trust most.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Book Appointment</h3>
+                    <p>Schedule at your convenience and get professional service delivered.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About</h4>
+                    <ul>
+                        <li><a href="#">About Service Hub</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookies</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <ul>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Service Hub. All rights reserved.</p>
+                <div class="social-icons">
+                    <a href="#">𝕏</a>
+                    <a href="#">f</a>
+                    <a href="#">📷</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
