@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -355,6 +356,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- NAVBAR -->
     <nav>
@@ -383,22 +385,12 @@
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label for="login-email">Email Address</label>
-                        <input 
-                            type="email" 
-                            id="login-email" 
-                            placeholder="you@example.com" 
-                            required
-                        />
+                        <input type="email" id="login-email" placeholder="you@example.com" required />
                     </div>
 
                     <div class="form-group">
                         <label for="login-password">Password</label>
-                        <input 
-                            type="password" 
-                            id="login-password" 
-                            placeholder="Enter your password" 
-                            required
-                        />
+                        <input type="password" id="login-password" placeholder="Enter your password" required />
                     </div>
 
                     <div class="checkbox-group">
@@ -437,32 +429,17 @@
                 <form onsubmit="handleSignup(event)">
                     <div class="form-group">
                         <label for="signup-name">Full Name</label>
-                        <input 
-                            type="text" 
-                            id="signup-name" 
-                            placeholder="John Doe" 
-                            required
-                        />
+                        <input type="text" id="signup-name" placeholder="John Doe" required />
                     </div>
 
                     <div class="form-group">
                         <label for="signup-email">Email Address</label>
-                        <input 
-                            type="email" 
-                            id="signup-email" 
-                            placeholder="you@example.com" 
-                            required
-                        />
+                        <input type="email" id="signup-email" placeholder="you@example.com" required />
                     </div>
 
                     <div class="form-group">
                         <label for="signup-password">Password</label>
-                        <input 
-                            type="password" 
-                            id="signup-password" 
-                            placeholder="Create a strong password" 
-                            required
-                        />
+                        <input type="password" id="signup-password" placeholder="Create a strong password" required />
                         <p style="font-size: 0.85rem; color: var(--text-gray); margin-top: 0.5rem;">
                             Password should be at least 8 characters
                         </p>
@@ -470,18 +447,14 @@
 
                     <div class="form-group">
                         <label for="signup-confirm">Confirm Password</label>
-                        <input 
-                            type="password" 
-                            id="signup-confirm" 
-                            placeholder="Confirm your password" 
-                            required
-                        />
+                        <input type="password" id="signup-confirm" placeholder="Confirm your password" required />
                     </div>
 
                     <div class="checkbox-group">
                         <input type="checkbox" id="agree-terms" required />
                         <label for="agree-terms" class="checkbox-label">
-                            I agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>
+                            I agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy
+                                Policy</a>
                         </label>
                     </div>
 
@@ -503,6 +476,8 @@
             </div>
         </div>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
 
     <script>
         function switchTab(tab) {
@@ -524,45 +499,57 @@
 
         function handleLogin(event) {
             event.preventDefault();
+
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            const rememberMe = document.getElementById('remember-me').checked;
 
-            // Simulate login (in real app, this would be an API call)
-            console.log('Login attempt:', { email, password, rememberMe });
-            alert('Login successful! Welcome back to Service Hub.');
-            
-            // Reset form
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    alert("Login successful!");
+                    window.location.href = "index.html";
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+
             event.target.reset();
         }
 
+
         function handleSignup(event) {
             event.preventDefault();
+
             const name = document.getElementById('signup-name').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             const confirmPassword = document.getElementById('signup-confirm').value;
-            const agreeTerms = document.getElementById('agree-terms').checked;
 
-            // Validate passwords match
             if (password !== confirmPassword) {
                 alert('Passwords do not match!');
                 return;
             }
 
-            // Validate password length
             if (password.length < 8) {
                 alert('Password must be at least 8 characters long!');
                 return;
             }
 
-            // Simulate signup (in real app, this would be an API call)
-            console.log('Signup attempt:', { name, email, password, agreeTerms });
-            alert('Account created successfully! Welcome to Service Hub.');
-            
-            // Reset form
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(async (userCredential) => {
+                    await userCredential.user.updateProfile({
+                        displayName: name
+                    });
+
+                    alert("Account created successfully!");
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+
             event.target.reset();
         }
+
     </script>
 </body>
+
 </html>

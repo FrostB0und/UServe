@@ -1,31 +1,15 @@
-async function login() {
-    const email = prompt("Enter email:");
-    const password = prompt("Enter password:");
+const firebaseConfig = {
+  apiKey: "AIzaSyA7Eq9GieVap23s7OEtN6YSAVjs7jQ7BtU",
+  authDomain: "userve-b1bdd.firebaseapp.com",
+  projectId: "userve-b1bdd",
+  storageBucket: "userve-b1bdd.firebasestorage.app",
+  messagingSenderId: "385296004300",
+  appId: "1:385296004300:web:344df09d1c944b54cabe69",
+  measurementId: "G-4YLDFR9LR8"
+};
 
-    const res = await fetch("http://localhost:3000/api/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-    });
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-    const data = await res.json();
-    alert(data.message);
-}
-
-async function register() {
-    const email = prompt("Enter email:");
-    const password = prompt("Enter password:");
-
-    const res = await fetch("http://localhost:3000/api/register", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-    alert(data.message);
-}
+// Auth reference
+const auth = firebase.auth();
